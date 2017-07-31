@@ -6,7 +6,7 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "docblox2md": "^0.6.4"
+    "docblox2md": "^0.7.0"
   },
   "directories": {
     "example": "example"
