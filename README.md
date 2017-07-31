@@ -23,7 +23,7 @@ $ composer require vphantom/nanosurvey
 
 ## Usage
 
-Instantiate the `NanoSurvey` class, which will process `$_REQUEST`'s `a`, `m` and `p` CGI variables to situate itself.  Invoke `page()` to display the current page inside a `<form>` block.
+Instantiate the `NanoSurvey` class, which will process `$_REQUEST`'s `a`, `p` and `x` CGI variables to situate itself.  Invoke `page()` to display the current page inside a `<form>` block.
 
 ```php
 <?php
@@ -48,7 +48,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 <?php
 
-$survey = new NanoSurvey();
+$survey = new NanoSurvey('/tmp/answers.csv');
 echo $survey->page();
 
 ?>
@@ -63,23 +63,21 @@ echo $survey->page();
 NanoSurvey class 
 
 
-### `public function __construct()`
+### `public function __construct($filename, $savePartial = false)`
 
 Initialize a survey 
 
+If $savePartial is set true, each time a participant submits a page, a new CSV line is appended with all answers obtained so far.  In this mode, 2 extra columns are prepended: a unique participant ID and a page number.  This makes it easy to keep only the most complete response from each participant, including those who did not reach the end of the survey. 
 
-**Returns:** `object` — New Survey instance
-
-### `public static function e($in)`
-
-Encode a variable for safe HTML display 
+If $savePartial is omitted or false, only complete surveys will be saved. 
 
 
 **Parameters:**
 
-* `$in` — string — Raw string
+* `$filename` — string — Path and name for the CSV results file
+* `$savePartial` — bool|null — Save incomplete rows during progress
 
-**Returns:** `string` — Sanitized string
+**Returns:** `object` — New Survey instance
 
 ### `public function previousAnswer($id)`
 
@@ -102,13 +100,6 @@ Save current progress in hidden FORM variables
 
 
 **Returns:** `string` — HTML with hidden inputs
-
-### `private function _answerId()`
-
-Build current answer CGI variable name 
-
-
-**Returns:** `string` — CGI variable name
 
 ### `public function newQuestion($type = 'normal')`
 
@@ -180,7 +171,7 @@ Create submit button for next page
 
 Display the current/next page 
 
-Pages are expected to be sequential, from "page-0.inc", "page-1.inc", etc.  until the final page which invokes saveAnswers(). 
+Pages are expected to be sequential, from "page-0.inc", "page-1.inc", etc. until the final page which invokes endSurvey(). 
 
 Variable $survey is available in these pages, representing $this instance of NanoSurvey. 
 
@@ -196,14 +187,10 @@ If, in a page, you assess that it should be skipped (i.e. based on prior answers
 
 **Returns:** null
 
-### `public function saveAnswers($filename)`
+### `public function endSurvey()`
 
-Save answers to CSV file, terminate survey 
+Terminate survey, saving to CSV if necessary 
 
-
-**Parameters:**
-
-* `$filename` — string — Path and name for the file
 
 **Returns:** null
 

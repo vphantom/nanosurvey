@@ -37,21 +37,49 @@
 class NanoSurvey
 {
     public $page = 0;
+    private $_magic = '';
+    private $_filename = '';
     private $_answer = 0;
+    private $_savePartial = false;
     private $_skip = false;
 
     /**
      * Initialize a survey
      *
+     * If $savePartial is set true, each time a participant submits a page, a
+     * new CSV line is appended with all answers obtained so far.  In this
+     * mode, 2 extra columns are prepended: a unique participant ID and a page
+     * number.  This makes it easy to keep only the most complete response
+     * from each participant, including those who did not reach the end of the
+     * survey.
+     *
+     * If $savePartial is omitted or false, only complete surveys will be
+     * saved.
+     *
+     * @param string    $filename    Path and name for the CSV results file
+     * @param bool|null $savePartial Save incomplete rows during progress
+     *
      * @return object New Survey instance
      */
-    public function __construct()
+    public function __construct($filename, $savePartial = false)
     {
+        $this->_filename = $filename;
+        $this->_savePartial = $savePartial;
+
         if (isset($_REQUEST['p']) && is_numeric($_REQUEST['p'])) {
             $this->page = $_REQUEST['p'];
         };
+
         if (isset($_REQUEST['m']) && is_numeric($_REQUEST['m'])) {
             $this->_answer = $_REQUEST['m'];
+        };
+
+        if ($savePartial) {
+            if (isset($_REQUEST['x']) && $_REQUEST['x'] != '') {
+                $this->_magic = $_REQUEST['x'];
+            } else {
+                $this->_magic = md5(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
+            };
         };
     }
 
@@ -61,8 +89,10 @@ class NanoSurvey
      * @param string $in Raw string
      *
      * @return string Sanitized string
+     *
+     * @access protected
      */
-    public static function e($in)
+    protected static function escape($in)
     {
         return filter_var($in, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     }
@@ -95,7 +125,7 @@ class NanoSurvey
         $out = '';
         foreach ($_REQUEST['a'] as $key => $val) {
             if ($_REQUEST['a'][$key] != '') {
-                $out .= "<input type=\"hidden\" name=\"a[{$key}]\" value=\"".self::e($_REQUEST['a'][$key])."\">\n";
+                $out .= "<input type=\"hidden\" name=\"a[{$key}]\" value=\"".self::escape($_REQUEST['a'][$key])."\">\n";
             };
         };
         return $out;
@@ -105,6 +135,8 @@ class NanoSurvey
      * Build current answer CGI variable name
      *
      * @return string CGI variable name
+     *
+     * @access private
      */
     private function _answerId()
     {
@@ -149,7 +181,7 @@ class NanoSurvey
      */
     public function radioCheckbox($value)
     {
-        return "<input type=\"radio\" name=\"".$this->_answerId()."\" value=\"".self::e($value)."\" required>";
+        return "<input type=\"radio\" name=\"".$this->_answerId()."\" value=\"".self::escape($value)."\" required>";
     }
 
     /**
@@ -162,7 +194,7 @@ class NanoSurvey
     public function checkbox($value)
     {
         $this->_answer++;
-        $out = "<input type=\"checkbox\" name=\"".$this->_answerId()."\" value=\"".self::e($value)."\">";
+        $out = "<input type=\"checkbox\" name=\"".$this->_answerId()."\" value=\"".self::escape($value)."\">";
         return $out;
     }
 
@@ -176,7 +208,7 @@ class NanoSurvey
     public function textbox($placeholder = "please specify")
     {
         $this->_answer++;
-        $out = "<input type=\"text\" name=\"".$this->_answerId()."\" placeholder=\"".self::e($placeholder)."\">";
+        $out = "<input type=\"text\" name=\"".$this->_answerId()."\" placeholder=\"".self::escape($placeholder)."\">";
         return $out;
     }
 
@@ -193,6 +225,7 @@ class NanoSurvey
         $lastAnswer = max(0, $this->_answer);
         return "<input type=\"hidden\" name=\"m\" value=\"{$lastAnswer}\">\n"
             . "<input type=\"hidden\" name=\"p\" value=\"{$newPage}\">\n"
+            . ($this->_savePartial ? "<input type=\"hidden\" name=\"x\" value=\"{$this->_magic}\">\n" : '')
             . "<button type=\"submit\">{$label}</button>";
     }
 
@@ -200,7 +233,7 @@ class NanoSurvey
      * Display the current/next page
      *
      * Pages are expected to be sequential, from "page-0.inc", "page-1.inc",
-     * etc.  until the final page which invokes saveAnswers().
+     * etc. until the final page which invokes endSurvey().
      *
      * Variable $survey is available in these pages, representing $this
      * instance of NanoSurvey.
@@ -212,6 +245,10 @@ class NanoSurvey
         $out = '';
         $out .= "<form method=\"post\">\n";
         $out .= $this->progressVars();
+
+        if ($this->_savePartial) {
+            $this->_saveAnswers();
+        };
 
         do {
             $this->_skip = false;
@@ -245,23 +282,39 @@ class NanoSurvey
     /**
      * Save answers to CSV file, terminate survey
      *
-     * @param string $filename Path and name for the file
-     *
      * @return null
+     *
+     * @access private
      */
-    public function saveAnswers($filename)
+    private function _saveAnswers()
     {
         $answers = array();
 
+        if ($this->_savePartial) {
+            $answers[] = $this->_magic;
+            $answers[] = $this->page;
+        };
         for ($i = 1; $i <= $this->_answer; $i++) {
             $answers[] = (isset($_REQUEST['a'][$i]) ? $_REQUEST['a'][$i] : '');
         };
 
-        if (($fp = fopen($filename, 'a')) !== false) {
+        if (($fp = fopen($this->_filename, 'a')) !== false) {
             fputcsv($fp, $answers);
             fclose($fp);
         } else {
             echo "<p><b>Error:</b> Saving failed!</p>\n";
+        };
+    }
+
+    /**
+     * Terminate survey, saving to CSV if necessary
+     *
+     * @return null
+     */
+    public function endSurvey()
+    {
+        if (!$this->_savePartial) {
+            $this->_saveAnswers();
         };
     }
 }

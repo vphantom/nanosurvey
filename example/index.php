@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once 'NanoSurvey.php';
 
 ?>
 <!doctype html>
@@ -16,7 +16,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 <?php
 
-$survey = new NanoSurvey();
+$survey = new NanoSurvey('/tmp/answers.csv');
 echo $survey->page();
 
 ?>
