@@ -233,6 +233,11 @@ class NanoSurvey
     /**
      * Placeholder answer
      *
+     * When only a specific question or answer choice should be skipped
+     * conditionally, instead of an entire page, display these placeholders
+     * where the skipped answers would've been.  This preserves the integrity
+     * of the answer count at all times.
+     *
      * @return string HTML hidden input
      */
     public function placeholder()
