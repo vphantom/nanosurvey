@@ -175,13 +175,22 @@ class NanoSurvey
     /**
      * Radio (one of many) checkbox
      *
-     * @param mixed $value Internal value to save if box is checked
+     * @param mixed     $value   Internal value to save if box is checked
+     * @param bool|null $default Set true to make this the default input (Default: false)
      *
      * @return string HTML checkbox
      */
-    public function radioCheckbox($value)
+    public function radioCheckbox($value, $default = false)
     {
-        return "<input type=\"radio\" name=\"".$this->_answerId()."\" value=\"".self::escape($value)."\" required>";
+        return
+            "<input type=\"radio\" name=\""
+            . $this->_answerId()
+            . "\" value=\""
+            . self::escape($value)
+            . "\" required"
+            . ($default ? " checked" : '')
+            . ">"
+        ;
     }
 
     /**

@@ -5,6 +5,7 @@ Ask a question here about age before going further.
 <ul>
 <li><?= $survey->radioCheckbox('yes') ?> Yes</li>
 <li><?= $survey->radioCheckbox('no') ?> No</li>
+<li><?= $survey->radioCheckbox('notsure', true) ?> Not sure</li>
 </ul>
 <?= $survey->endQuestion() ?>
 

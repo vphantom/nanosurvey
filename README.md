@@ -123,7 +123,7 @@ Finalizes internal data.  Every question MUST end with a call to this function.
 
 **Returns:** null
 
-### `public function radioCheckbox($value)`
+### `public function radioCheckbox($value, $default = false)`
 
 Radio (one of many) checkbox 
 
@@ -131,6 +131,7 @@ Radio (one of many) checkbox
 **Parameters:**
 
 * `$value` — mixed — Internal value to save if box is checked
+* `$default` — bool|null — Set true to make this the default input (Default: false)
 
 **Returns:** `string` — HTML checkbox
 
