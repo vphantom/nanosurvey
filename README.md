@@ -146,14 +146,15 @@ Checkbox (multiple possible)
 
 **Returns:** `string` — HTML checkbox
 
-### `public function textbox($placeholder = "please specify")`
+### `public function textbox($placeholder = "please specify", $size = 0)`
 
 Single line text input box 
 
 
 **Parameters:**
 
-* `$placeholder` — string — Text to display inside box when it is empty
+* `$placeholder` — string|null — Text to display inside box when it is empty
+* `$size` — int|null — How many characters wide the input should be? (Default: unspecified)
 
 **Returns:** `string` — HTML input box
 

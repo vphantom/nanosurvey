@@ -210,14 +210,23 @@ class NanoSurvey
     /**
      * Single line text input box
      *
-     * @param string $placeholder Text to display inside box when it is empty
+     * @param string|null $placeholder Text to display inside box when it is empty
+     * @param int|null    $size        How many characters wide the input should be? (Default: unspecified)
      *
      * @return string HTML input box
      */
-    public function textbox($placeholder = "please specify")
+    public function textbox($placeholder = "please specify", $size = 0)
     {
         $this->_answer++;
-        $out = "<input type=\"text\" name=\"".$this->_answerId()."\" placeholder=\"".self::escape($placeholder)."\">";
+        $out
+            = "<input type=\"text\" name=\""
+            . $this->_answerId()
+            . "\" placeholder=\""
+            . self::escape($placeholder)
+            . "\""
+            . ($size > 0 ? " size=\"{$size}\"" : '')
+            . ">"
+        ;
         return $out;
     }
 
