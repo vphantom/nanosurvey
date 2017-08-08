@@ -231,6 +231,17 @@ class NanoSurvey
     }
 
     /**
+     * Placeholder answer
+     *
+     * @return string HTML hidden input
+     */
+    public function placeholder()
+    {
+        $this->_answer++;
+        return "<input type=\"hidden\" name=\"".$this->_answerId()."\" value=\"\">";
+    }
+
+    /**
      * Create submit button for next page
      *
      * @param string $label HTML content of button (Default: "Continue")

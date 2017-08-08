@@ -158,6 +158,13 @@ Single line text input box
 
 **Returns:** `string` — HTML input box
 
+### `public function placeholder()`
+
+Placeholder answer 
+
+
+**Returns:** `string` — HTML hidden input
+
 ### `public function submitButton($label = "Continue")`
 
 Create submit button for next page 
