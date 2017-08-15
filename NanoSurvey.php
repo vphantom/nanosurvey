@@ -58,8 +58,6 @@ class NanoSurvey
      *
      * @param string    $filename    Path and name for the CSV results file
      * @param bool|null $savePartial Save incomplete rows during progress
-     *
-     * @return object New Survey instance
      */
     public function __construct($filename, $savePartial = false)
     {
@@ -125,7 +123,10 @@ class NanoSurvey
         $out = '';
         foreach ($_REQUEST['a'] as $key => $val) {
             if ($_REQUEST['a'][$key] != '') {
-                $out .= "<input type=\"hidden\" name=\"a[{$key}]\" value=\"".self::escape($_REQUEST['a'][$key])."\">\n";
+                $out .= "<input type=\"hidden\" name=\"a[{$key}]\" value=\""
+                    . self::escape($_REQUEST['a'][$key])
+                    . "\">\n"
+                ;
             };
         };
         return $out;
@@ -151,7 +152,7 @@ class NanoSurvey
      *
      * @param string $type Normal by default, specify 'radio' for a radio group
      *
-     * @return null
+     * @return void
      */
     public function newQuestion($type = 'normal')
     {
@@ -166,7 +167,7 @@ class NanoSurvey
      * Finalizes internal data.  Every question MUST end with a call to this
      * function.
      *
-     * @return null
+     * @return void
      */
     public function endQuestion()
     {
@@ -176,7 +177,7 @@ class NanoSurvey
      * Radio (one of many) checkbox
      *
      * @param mixed     $value   Internal value to save if box is checked
-     * @param bool|null $default Set true to make this the default input (Default: false)
+     * @param bool|null $default Set true to make this the default input
      *
      * @return string HTML checkbox
      */
@@ -203,7 +204,12 @@ class NanoSurvey
     public function checkbox($value)
     {
         $this->_answer++;
-        $out = "<input type=\"checkbox\" name=\"".$this->_answerId()."\" value=\"".self::escape($value)."\">";
+        $out = "<input type=\"checkbox\" name=\""
+            . $this->_answerId()
+            . "\" value=\""
+            . self::escape($value)
+            . "\">"
+        ;
         return $out;
     }
 
@@ -211,7 +217,7 @@ class NanoSurvey
      * Single line text input box
      *
      * @param string|null $placeholder Text to display inside box when it is empty
-     * @param int|null    $size        How many characters wide the input should be? (Default: unspecified)
+     * @param int|null    $size        How many characters wide the input should be?
      *
      * @return string HTML input box
      */
@@ -257,10 +263,15 @@ class NanoSurvey
     {
         $newPage = $this->page + 1;
         $lastAnswer = max(0, $this->_answer);
-        return "<input type=\"hidden\" name=\"m\" value=\"{$lastAnswer}\">\n"
+        $out = "<input type=\"hidden\" name=\"m\" value=\"{$lastAnswer}\">\n"
             . "<input type=\"hidden\" name=\"p\" value=\"{$newPage}\">\n"
-            . ($this->_savePartial ? "<input type=\"hidden\" name=\"x\" value=\"{$this->_magic}\">\n" : '')
-            . "<button type=\"submit\">{$label}</button>";
+        ;
+        if ($this->_savePartial) {
+            $out .= "<input type=\"hidden\" name=\"x\" value=\"{$this->_magic}\">\n";
+        };
+        $out .= "<button>{$label}</button>";
+
+        return $out;
     }
 
     /**
@@ -287,7 +298,7 @@ class NanoSurvey
         do {
             $this->_skip = false;
             ob_start();
-            $survey = $this;
+            $survey = $this;  // Used in included file
             include_once 'page-' . $this->page . '.inc';
             $body = ob_get_contents();
             ob_end_clean();
@@ -305,7 +316,7 @@ class NanoSurvey
      * If, in a page, you assess that it should be skipped (i.e. based on
      * prior answers), call this method.
      *
-     * @return null
+     * @return void
      */
     public function skipPage()
     {
@@ -316,7 +327,7 @@ class NanoSurvey
     /**
      * Save answers to CSV file, terminate survey
      *
-     * @return null
+     * @return void
      *
      * @access private
      */
@@ -343,7 +354,7 @@ class NanoSurvey
     /**
      * Terminate survey, saving to CSV if necessary
      *
-     * @return null
+     * @return void
      */
     public function endSurvey()
     {
