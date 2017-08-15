@@ -46,12 +46,15 @@ class NanoSurvey
     /**
      * Initialize a survey
      *
+     * The first CSV column is the timestamp when the responses are saved, the
+     * rest are each response in order.
+     *
      * If $savePartial is set true, each time a participant submits a page, a
      * new CSV line is appended with all answers obtained so far.  In this
-     * mode, 2 extra columns are prepended: a unique participant ID and a page
-     * number.  This makes it easy to keep only the most complete response
-     * from each participant, including those who did not reach the end of the
-     * survey.
+     * mode, 2 extra columns are prepended after the timestamp: a unique
+     * participant ID and a page number.  This makes it easy to keep only the
+     * most complete response from each participant, including those who did
+     * not reach the end of the survey.
      *
      * If $savePartial is omitted or false, only complete surveys will be
      * saved.
@@ -380,6 +383,8 @@ class NanoSurvey
     private function _saveAnswers()
     {
         $answers = array();
+
+        $answers[] = date("Y-m-d H:i:s O");
 
         if ($this->_savePartial) {
             $answers[] = $this->_magic;
