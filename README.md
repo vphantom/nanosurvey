@@ -156,6 +156,29 @@ Single line text input box
 
 **Returns:** `string` — HTML input box
 
+### `public function beginSelectOne()`
+
+Select one within many 
+
+Differs from radio buttons in that a single drop-down is displayed. 
+
+
+**Returns:** `string` — HTML select initialization
+
+### `public function endSelectOne($first, $last)`
+
+Close select one within many 
+
+If optional arguments $first and $last are specified, numeric options are automatically created and appended for each possibility.  You may still wish to create one "none selected" option with an empty value if you'd like before calling this. 
+
+
+**Parameters:**
+
+* `$first` — int|null — First option
+* `$last` — int|null — Last option (max: $first + 500)
+
+**Returns:** `string` — HTML select finalization
+
 ### `public function placeholder()`
 
 Placeholder answer 

@@ -237,6 +237,52 @@ class NanoSurvey
     }
 
     /**
+     * Select one within many
+     *
+     * Differs from radio buttons in that a single drop-down is displayed.
+     *
+     * @return string HTML select initialization
+     */
+    public function beginSelectOne()
+    {
+        $this->_answer++;
+        $out
+            = "<select name=\""
+            . $this->_answerId()
+            . "\">\n"
+        ;
+        return $out;
+    }
+
+    /**
+     * Close select one within many
+     *
+     * If optional arguments $first and $last are specified, numeric options
+     * are automatically created and appended for each possibility.  You may
+     * still wish to create one "none selected" option with an empty value if
+     * you'd like before calling this.
+     *
+     * @param int|null $first First option
+     * @param int|null $last  Last option (max: $first + 500)
+     *
+     * @return string HTML select finalization
+     */
+    public function endSelectOne($first, $last)
+    {
+        $out = '';
+        if (is_numeric($first)
+            && is_numeric($last)
+        ) {
+            $last = min($last, $first + 500);
+            for ($i=$first; $i <= $last; $i++) {
+                $out .= "\t<option value=\"{$i}\">{$i}\n";
+            };
+        };
+        $out .= "</select>\n";
+        return $out;
+    }
+
+    /**
      * Placeholder answer
      *
      * When only a specific question or answer choice should be skipped

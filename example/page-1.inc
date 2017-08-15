@@ -24,6 +24,13 @@ Ask a question here about age before going further.
 </ul>
 <?= $survey->endQuestion() ?>
 
+<?= $survey->newQuestion() ?>
+<p>How many months per year does the stuff happen?</p>
+<?= $survey->beginSelectOne() ?>
+<option value="">Please select
+<?= $survey->endSelectOne(0,12) ?>
+<?= $survey->endQuestion() ?>
+
 <?= $survey->newQuestion('radio') ?>
 Radio problem
 <ul>
