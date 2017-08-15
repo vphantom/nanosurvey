@@ -77,8 +77,6 @@ If $savePartial is omitted or false, only complete surveys will be saved.
 * `$filename` — string — Path and name for the CSV results file
 * `$savePartial` — bool|null — Save incomplete rows during progress
 
-**Returns:** `object` — New Survey instance
-
 ### `public function previousAnswer($id)`
 
 Get previous answer, if one was given 
@@ -112,7 +110,7 @@ Initializes internal data.  Every question MUST start with a call to this functi
 
 * `$type` — string — Normal by default, specify 'radio' for a radio group
 
-**Returns:** null
+**Returns:** void
 
 ### `public function endQuestion()`
 
@@ -121,7 +119,7 @@ End current question
 Finalizes internal data.  Every question MUST end with a call to this function. 
 
 
-**Returns:** null
+**Returns:** void
 
 ### `public function radioCheckbox($value, $default = false)`
 
@@ -131,7 +129,7 @@ Radio (one of many) checkbox
 **Parameters:**
 
 * `$value` — mixed — Internal value to save if box is checked
-* `$default` — bool|null — Set true to make this the default input (Default: false)
+* `$default` — bool|null — Set true to make this the default input
 
 **Returns:** `string` — HTML checkbox
 
@@ -154,7 +152,7 @@ Single line text input box
 **Parameters:**
 
 * `$placeholder` — string|null — Text to display inside box when it is empty
-* `$size` — int|null — How many characters wide the input should be? (Default: unspecified)
+* `$size` — int|null — How many characters wide the input should be?
 
 **Returns:** `string` — HTML input box
 
@@ -196,14 +194,14 @@ Skip the current page, display next one instead
 If, in a page, you assess that it should be skipped (i.e. based on prior answers), call this method. 
 
 
-**Returns:** null
+**Returns:** void
 
 ### `public function endSurvey()`
 
 Terminate survey, saving to CSV if necessary 
 
 
-**Returns:** null
+**Returns:** void
 
 <!-- END DOC-COMMENT -->
 
